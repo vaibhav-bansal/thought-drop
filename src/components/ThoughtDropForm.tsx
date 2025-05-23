@@ -92,7 +92,7 @@ const ThoughtDropForm: React.FC<ThoughtDropFormProps> = ({ onSubmit }) => {
   const isFormValid = formData.message.trim().length > 0;
 
   return (
-    <div className="min-h-screen p-4 flex flex-col">
+    <div className="min-h-screen p-4 pb-8 flex flex-col">
       {/* Header */}
       <div className="flex justify-between items-center mb-8">
         <div className="flex items-center space-x-3">
@@ -107,7 +107,7 @@ const ThoughtDropForm: React.FC<ThoughtDropFormProps> = ({ onSubmit }) => {
       </div>
 
       {/* Form */}
-      <form onSubmit={handleSubmit} className="flex-1 space-y-8 max-w-md mx-auto w-full">
+      <form onSubmit={handleSubmit} className="flex-1 space-y-8 max-w-md mx-auto w-full mb-8">
         {/* Question 1: How do you feel? */}
         <Card className="p-6 bg-white/30 dark:bg-white/5 border-warm-text/10">
           <h3 className="text-lg font-medium mb-4 text-warm-text dark:text-warm-text">
