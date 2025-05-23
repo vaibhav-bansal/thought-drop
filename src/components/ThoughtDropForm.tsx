@@ -35,6 +35,8 @@ const ThoughtDropForm: React.FC<ThoughtDropFormProps> = ({ onSubmit }) => {
     'Pari',
     'Baby girl',
     'Princess',
+    "Parvati",
+    "Goddess",
     'Strong independent woman',
     "Daddy's girl",
     'Little demon',
@@ -59,7 +61,7 @@ const ThoughtDropForm: React.FC<ThoughtDropFormProps> = ({ onSubmit }) => {
   const handleEventChange = (eventId: string, checked: boolean) => {
     setFormData(prev => ({
       ...prev,
-      events: checked 
+      events: checked
         ? [...prev.events, eventId]
         : prev.events.filter(e => e !== eventId)
     }));
@@ -67,13 +69,13 @@ const ThoughtDropForm: React.FC<ThoughtDropFormProps> = ({ onSubmit }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.message.trim()) {
       return;
     }
 
     setIsSubmitting(true);
-    
+
     try {
       await sendThoughtDrop(formData);
       onSubmit(formData);
@@ -214,9 +216,8 @@ const ThoughtDropForm: React.FC<ThoughtDropFormProps> = ({ onSubmit }) => {
         <Button
           type="submit"
           disabled={!isFormValid || isSubmitting}
-          className={`w-full py-4 text-lg font-medium transition-all duration-300 ${
-            isSubmitting ? 'gentle-bounce' : ''
-          } bg-soft-pink hover:bg-soft-pink/90 text-warm-text border-0 rounded-xl shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed`}
+          className={`w-full py-4 text-lg font-medium transition-all duration-300 ${isSubmitting ? 'gentle-bounce' : ''
+            } bg-soft-pink hover:bg-soft-pink/90 text-warm-text border-0 rounded-xl shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed`}
         >
           {isSubmitting ? 'Sending to Vaibhav...' : 'Send to Vaibhav ♥'}
         </Button>
