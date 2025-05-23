@@ -8,8 +8,8 @@ interface EmojiSliderProps {
 }
 
 const EmojiSlider: React.FC<EmojiSliderProps> = ({ value, onChange }) => {
-  const emojis = ['😢', '😔', '😕', '😐', '😊', '😄', '😍', '🥰', '😈', '🔥'];
-  const labels = ['Very Sad', 'Sad', 'Down', 'Neutral', 'Happy', 'Joyful', 'Loving', 'Adoring', 'Naughty', 'Fiery'];
+  const emojis = ['😢', '😔', '😕', '😠', '😐', '😊', '😄', '😍', '🥰', '😈'];
+  const labels = ['Very Sad', 'Sad', 'Down', 'Angry', 'Neutral', 'Happy', 'Joyful', 'Loving', 'Adoring', 'Naughty'];
 
   return (
     <div className="space-y-4">

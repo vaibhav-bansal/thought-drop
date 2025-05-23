@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -10,29 +9,21 @@ import { Textarea } from '@/components/ui/textarea';
 import EmojiSlider from './EmojiSlider';
 import RangeSlider from './RangeSlider';
 import { Heart } from 'lucide-react';
-
-interface FormData {
-  feeling: number;
-  name: string;
-  missYou: number;
-  horny: number;
-  angry: number;
-  events: string[];
-  message: string;
-  responseType: string;
-}
+import { sendThoughtDrop, FormData } from '@/lib/emailService';
+import { useToast } from "@/hooks/use-toast";
 
 interface ThoughtDropFormProps {
   onSubmit: (data: FormData) => void;
 }
 
 const ThoughtDropForm: React.FC<ThoughtDropFormProps> = ({ onSubmit }) => {
+  const { toast } = useToast();
   const [formData, setFormData] = useState<FormData>({
-    feeling: 4,
+    feeling: 5,
     name: 'Pari',
     missYou: 5,
-    horny: 5,
-    angry: 1,
+    horny: 2,
+    angry: 0,
     events: [],
     message: '',
     responseType: 'Listen only'
@@ -83,10 +74,19 @@ const ThoughtDropForm: React.FC<ThoughtDropFormProps> = ({ onSubmit }) => {
 
     setIsSubmitting(true);
     
-    setTimeout(() => {
+    try {
+      await sendThoughtDrop(formData);
       onSubmit(formData);
+    } catch (error) {
+      console.error('Failed to send thought drop:', error);
+      toast({
+        variant: "destructive",
+        title: "Failed to send thought drop",
+        description: "Please try again later. If the problem persists, check your internet connection.",
+      });
+    } finally {
       setIsSubmitting(false);
-    }, 1000);
+    }
   };
 
   const isFormValid = formData.message.trim().length > 0;
