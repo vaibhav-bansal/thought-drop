@@ -2,11 +2,9 @@
 import React, { useState, useEffect } from 'react';
 import ThoughtDropForm from '@/components/ThoughtDropForm';
 import ConfirmationScreen from '@/components/ConfirmationScreen';
-import SettingsDrawer from '@/components/SettingsDrawer';
 
 const Index = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [showSettings, setShowSettings] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
 
   useEffect(() => {
@@ -29,31 +27,14 @@ const Index = () => {
     setIsSubmitted(false);
   };
 
-  const handleDarkModeToggle = () => {
-    const newDarkMode = !darkMode;
-    setDarkMode(newDarkMode);
-    localStorage.setItem('darkMode', newDarkMode.toString());
-    document.documentElement.classList.toggle('dark', newDarkMode);
-  };
-
   if (isSubmitted) {
     return <ConfirmationScreen onReset={handleReset} />;
   }
 
   return (
-    <>
-      <ThoughtDropForm 
-        onSubmit={handleFormSubmit}
-        onSettings={() => setShowSettings(true)}
-      />
-      
-      <SettingsDrawer
-        isOpen={showSettings}
-        onOpenChange={setShowSettings}
-        darkMode={darkMode}
-        onDarkModeToggle={handleDarkModeToggle}
-      />
-    </>
+    <ThoughtDropForm 
+      onSubmit={handleFormSubmit}
+    />
   );
 };
 

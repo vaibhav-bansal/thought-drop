@@ -65,7 +65,7 @@ const ConfirmationScreen: React.FC<ConfirmationScreenProps> = ({ onReset }) => {
           <Button
             onClick={onReset}
             variant="outline"
-            className="w-full py-3 text-warm-text border-warm-text/20 hover:bg-white/20 dark:hover:bg-white/10"
+            className="w-full py-3 text-white border-warm-text/20 hover:bg-white/20 dark:hover:bg-white/10"
           >
             Send Another Thought
           </Button>
