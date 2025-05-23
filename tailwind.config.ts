@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,7 +62,12 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
-				}
+				},
+				'warm-beige': '#F5F1E8',
+				'soft-pink': '#F4C2C2',
+				'lavender': '#E8D5FF',
+				'sage': '#D4E6C7',
+				'warm-text': '#4A4037'
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
@@ -84,11 +90,22 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				confetti: {
+					'0%': { opacity: '1', transform: 'scale(0) rotate(0deg)' },
+					'50%': { opacity: '1', transform: 'scale(1.2) rotate(180deg)' },
+					'100%': { opacity: '0', transform: 'scale(0.8) rotate(360deg)' }
+				},
+				'gentle-bounce': {
+					'0%, 100%': { transform: 'translateY(0)' },
+					'50%': { transform: 'translateY(-4px)' }
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'confetti': 'confetti 1s ease-out',
+				'gentle-bounce': 'gentle-bounce 0.3s ease-out'
 			}
 		}
 	},

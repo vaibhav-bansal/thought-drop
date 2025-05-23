@@ -1,11 +1,18 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --background: 37 33 20;
+    --foreground: 37 33 20;
+    --warm-beige: #F5F1E8;
+    --soft-pink: #F4C2C2;
+    --lavender: #E8D5FF;
+    --sage: #D4E6C7;
+    --warm-text: #4A4037;
 
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
@@ -35,25 +42,23 @@
     --radius: 0.5rem;
 
     --sidebar-background: 0 0% 98%;
-
     --sidebar-foreground: 240 5.3% 26.1%;
-
     --sidebar-primary: 240 5.9% 10%;
-
     --sidebar-primary-foreground: 0 0% 98%;
-
     --sidebar-accent: 240 4.8% 95.9%;
-
     --sidebar-accent-foreground: 240 5.9% 10%;
-
     --sidebar-border: 220 13% 91%;
-
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --background: 15 15 20;
+    --foreground: 245 245 245;
+    --warm-beige: #1E1E2A;
+    --soft-pink: #8B4B6B;
+    --lavender: #6B5B8B;
+    --sage: #5B7A5B;
+    --warm-text: #E5E5E5;
 
     --card: 222.2 84% 4.9%;
     --card-foreground: 210 40% 98%;
@@ -96,6 +101,32 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground font-['Inter',sans-serif];
+    background-color: var(--warm-beige);
+    color: var(--warm-text);
   }
+
+  .dark body {
+    background-color: var(--warm-beige);
+    color: var(--warm-text);
+  }
+}
+
+@keyframes confetti {
+  0% { opacity: 1; transform: scale(0) rotate(0deg); }
+  50% { opacity: 1; transform: scale(1.2) rotate(180deg); }
+  100% { opacity: 0; transform: scale(0.8) rotate(360deg); }
+}
+
+@keyframes gentle-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+.confetti-animation {
+  animation: confetti 1s ease-out;
+}
+
+.gentle-bounce {
+  animation: gentle-bounce 0.3s ease-out;
 }
