@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import EmojiSlider from './EmojiSlider';
 import RangeSlider from './RangeSlider';
-import { Heart, Settings } from 'lucide-react';
+import { Heart } from 'lucide-react';
 
 interface FormData {
   feeling: number;
@@ -24,10 +24,9 @@ interface FormData {
 
 interface ThoughtDropFormProps {
   onSubmit: (data: FormData) => void;
-  onSettings: () => void;
 }
 
-const ThoughtDropForm: React.FC<ThoughtDropFormProps> = ({ onSubmit, onSettings }) => {
+const ThoughtDropForm: React.FC<ThoughtDropFormProps> = ({ onSubmit }) => {
   const [formData, setFormData] = useState<FormData>({
     feeling: 4,
     name: 'Pari',
@@ -105,14 +104,6 @@ const ThoughtDropForm: React.FC<ThoughtDropFormProps> = ({ onSubmit, onSettings 
             <p className="text-sm text-warm-text/60 dark:text-warm-text/60">A safe space for your heart</p>
           </div>
         </div>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={onSettings}
-          className="text-warm-text/60 hover:text-warm-text dark:text-warm-text/60 dark:hover:text-warm-text"
-        >
-          <Settings className="w-5 h-5" />
-        </Button>
       </div>
 
       {/* Form */}
