@@ -12,9 +12,30 @@ export interface FormData {
   responseType: string;
 }
 
+// Environment configuration
+const isTestEnv = import.meta.env.VITE_APP_ENV === 'test';
+
+// Get template ID based on environment
+const getTemplateId = () => {
+  if (isTestEnv) {
+    return import.meta.env.VITE_EMAILJS_TEST_TEMPLATE_ID || import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
+  }
+  return import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
+};
+
+// Log environment configuration on initialization
+console.log('EmailJS Environment:', {
+  environment: isTestEnv ? 'TEST' : 'PRODUCTION',
+  serviceId: import.meta.env.VITE_EMAILJS_SERVICE_ID,
+  templateId: getTemplateId(),
+  hasTestTemplate: !!import.meta.env.VITE_EMAILJS_TEST_TEMPLATE_ID,
+  appEnv: import.meta.env.VITE_APP_ENV
+});
+
 // Emoji and label mappings
-const emojis = ['😢', '😔', '😕', '😐', '😊', '😄', '😍', '🥰', '😈', '🔥'];
-const labels = ['Very Sad', 'Sad', 'Down', 'Neutral', 'Happy', 'Joyful', 'Loving', 'Adoring', 'Naughty', 'Fiery'];
+const emojis = ['😢', '😔', '😕', '😠', '😐', '😊', '😄', '😍', '🥰', '😈'];
+const labels = ['Very Sad', 'Sad', 'Down', 'Angry', 'Neutral', 'Happy', 'Joyful', 'Loving', 'Adoring', 'Naughty'];
+
 
 // Event type mappings
 const eventMappings: Record<string, string> = {
@@ -43,7 +64,6 @@ export const sendThoughtDrop = async (formData: FormData): Promise<void> => {
 
     // Prepare template parameters
     const templateParams = {
-      to_email: import.meta.env.VITE_TO_EMAIL,
       feeling_emoji: emojis[formData.feeling],
       feeling_label: labels[formData.feeling],
       name: formData.name,
@@ -62,16 +82,17 @@ export const sendThoughtDrop = async (formData: FormData): Promise<void> => {
         minute: 'numeric',
         hour12: true,
         timeZone: 'Asia/Kolkata'
-      })
+      }),
+      environment: isTestEnv ? '[TEST] ' : '' // Add environment indicator in test mode
     };
 
     // Log the data being sent (for debugging)
-    console.log('Sending email with data:', templateParams);
+    console.log(`Sending email in ${isTestEnv ? 'TEST' : 'PRODUCTION'} mode:`, templateParams);
 
     // Send the email
     const response = await emailjs.send(
       import.meta.env.VITE_EMAILJS_SERVICE_ID,
-      import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+      getTemplateId(),
       templateParams
     );
 

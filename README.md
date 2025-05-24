@@ -1,73 +1,82 @@
-# Welcome to your Lovable project
+# Thought Drop
 
-## Project info
+A safe space for sharing your thoughts and feelings.
 
-**URL**: https://lovable.dev/projects/4cbe4c52-9afb-4045-ae50-62c9c8a98e16
+## Project Overview
 
-## How can I edit this code?
+Thought Drop is a web application that provides a secure and private way to share your thoughts, feelings, and daily experiences. Built with modern web technologies, it offers a beautiful and intuitive user interface for emotional expression.
 
-There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/4cbe4c52-9afb-4045-ae50-62c9c8a98e16) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
+## Technologies Used
 
 - Vite
 - TypeScript
 - React
 - shadcn-ui
 - Tailwind CSS
+- EmailJS (for email notifications)
 
-## How can I deploy this project?
+## Development Setup
 
-Simply open [Lovable](https://lovable.dev/projects/4cbe4c52-9afb-4045-ae50-62c9c8a98e16) and click on Share -> Publish.
+1. Clone the repository:
+```sh
+git clone <repository-url>
+cd thought-drop
+```
 
-## Can I connect a custom domain to my Lovable project?
+2. Install dependencies:
+```sh
+npm install
+```
 
-Yes, you can!
+3. Set up environment variables:
+   - Copy `.env.example` to `.env.local` for production
+   - Copy `.env.example` to `.env.test` for testing
+   - Update the variables with your EmailJS credentials
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+4. Start the development server:
+```sh
+# For production environment
+npm run dev
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+# For test environment
+npm run dev -- --mode test
+```
+
+## Building for Production
+
+```sh
+npm run build
+```
+
+## Environment Variables
+
+Required environment variables:
+- `VITE_EMAILJS_PUBLIC_KEY`: Your EmailJS public key
+- `VITE_EMAILJS_SERVICE_ID`: Your EmailJS service ID
+- `VITE_EMAILJS_TEMPLATE_ID`: Your EmailJS template ID
+
+Optional test environment variables:
+- `VITE_EMAILJS_TEST_TEMPLATE_ID`: Test template ID
+- `VITE_APP_ENV`: Set to 'test' for test environment
+
+## Features
+
+- Emotional state tracking
+- Customizable name selection
+- Multiple emotion meters
+- Event tagging
+- Private messaging
+- Email notifications
+- Dark mode support
+- Responsive design
+
+## Security
+
+- No data storage on servers
+- Direct email delivery
+- No tracking or analytics
+- Private and secure communication
+
+## License
+
+Private - All rights reserved

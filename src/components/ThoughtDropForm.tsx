@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -6,11 +7,13 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { RequiredFormLabel } from '@/components/ui/required-form-label';
 import EmojiSlider from './EmojiSlider';
 import RangeSlider from './RangeSlider';
 import { Heart } from 'lucide-react';
 import { sendThoughtDrop, FormData } from '@/lib/emailService';
 import { useToast } from "@/hooks/use-toast";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 
 interface ThoughtDropFormProps {
   onSubmit: (data: FormData) => void;
@@ -18,21 +21,24 @@ interface ThoughtDropFormProps {
 
 const ThoughtDropForm: React.FC<ThoughtDropFormProps> = ({ onSubmit }) => {
   const { toast } = useToast();
-  const [formData, setFormData] = useState<FormData>({
-    feeling: 5,
-    name: 'Pari',
-    missYou: 5,
-    horny: 2,
-    angry: 0,
-    events: [],
-    message: '',
-    responseType: 'Listen only'
+  const form = useForm<FormData>({
+    defaultValues: {
+      feeling: 5,
+      name: undefined,
+      missYou: 5,
+      horny: 2,
+      angry: 0,
+      events: [],
+      message: undefined,
+      responseType: undefined
+    }
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const nameOptions = [
     'Pari',
+    'Chhota Bachcha',
     'Baby girl',
     'Princess',
     "Parvati",
@@ -59,26 +65,19 @@ const ThoughtDropForm: React.FC<ThoughtDropFormProps> = ({ onSubmit }) => {
   ];
 
   const handleEventChange = (eventId: string, checked: boolean) => {
-    setFormData(prev => ({
-      ...prev,
-      events: checked
-        ? [...prev.events, eventId]
-        : prev.events.filter(e => e !== eventId)
-    }));
+    const currentEvents = form.getValues('events');
+    form.setValue('events', checked
+      ? [...currentEvents, eventId]
+      : currentEvents.filter(e => e !== eventId)
+    );
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!formData.message.trim()) {
-      return;
-    }
-
+  const onSubmitForm = async (data: FormData) => {
     setIsSubmitting(true);
 
     try {
-      await sendThoughtDrop(formData);
-      onSubmit(formData);
+      await sendThoughtDrop(data);
+      onSubmit(data);
     } catch (error) {
       console.error('Failed to send thought drop:', error);
       toast({
@@ -90,8 +89,6 @@ const ThoughtDropForm: React.FC<ThoughtDropFormProps> = ({ onSubmit }) => {
       setIsSubmitting(false);
     }
   };
-
-  const isFormValid = formData.message.trim().length > 0;
 
   return (
     <div className="min-h-screen p-4 pb-8 flex flex-col">
@@ -109,119 +106,197 @@ const ThoughtDropForm: React.FC<ThoughtDropFormProps> = ({ onSubmit }) => {
       </div>
 
       {/* Form */}
-      <form onSubmit={handleSubmit} className="flex-1 space-y-8 max-w-md mx-auto w-full mb-8">
-        {/* Question 1: How do you feel? */}
-        <Card className="p-6 bg-white/30 dark:bg-white/5 border-warm-text/10">
-          <h3 className="text-lg font-medium mb-4 text-warm-text dark:text-warm-text">
-            How do you feel right now? *
-          </h3>
-          <EmojiSlider
-            value={formData.feeling}
-            onChange={(value) => setFormData(prev => ({ ...prev, feeling: value }))}
-          />
-        </Card>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmitForm)} className="flex-1 space-y-8 max-w-md mx-auto w-full mb-8">
+          {/* Question 1: How do you feel? */}
+          <Card className="p-6 bg-white/30 dark:bg-white/5 border-warm-text/10">
+            <FormField
+              control={form.control}
+              name="feeling"
+              rules={{ required: "Please select how you feel" }}
+              render={({ field }) => (
+                <FormItem>
+                  <RequiredFormLabel>How do you feel right now?</RequiredFormLabel>
+                  <FormControl>
+                    <EmojiSlider
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </Card>
 
-        {/* Question 2: Pick your name */}
-        <Card className="p-6 bg-white/30 dark:bg-white/5 border-warm-text/10">
-          <h3 className="text-lg font-medium mb-4 text-warm-text dark:text-warm-text">
-            Pick your name *
-          </h3>
-          <Select value={formData.name} onValueChange={(value) => setFormData(prev => ({ ...prev, name: value }))}>
-            <SelectTrigger className="bg-white/50 dark:bg-white/10 border-warm-text/20">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent className="bg-white dark:bg-gray-800">
-              {nameOptions.map(name => (
-                <SelectItem key={name} value={name}>{name}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </Card>
+          {/* Question 2: Pick your name */}
+          <Card className="p-6 bg-white/30 dark:bg-white/5 border-warm-text/10">
+            <FormField
+              control={form.control}
+              name="name"
+              rules={{ required: "Please select a name" }}
+              render={({ field }) => (
+                <FormItem>
+                  <RequiredFormLabel>Your Name</RequiredFormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger className="bg-white/50 dark:bg-white/10 border-warm-text/20">
+                        <SelectValue placeholder="Select a name" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent className="bg-white dark:bg-gray-800">
+                      {nameOptions.map(name => (
+                        <SelectItem key={name} value={name}>{name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </Card>
 
-        {/* Question 3-5: Meters */}
-        <Card className="p-6 bg-white/30 dark:bg-white/5 border-warm-text/10 space-y-6">
-          <RangeSlider
-            label="Miss You Meter"
-            value={formData.missYou}
-            onChange={(value) => setFormData(prev => ({ ...prev, missYou: value }))}
-          />
-          <RangeSlider
-            label="Horny Meter"
-            value={formData.horny}
-            onChange={(value) => setFormData(prev => ({ ...prev, horny: value }))}
-          />
-          <RangeSlider
-            label="Angry Meter"
-            value={formData.angry}
-            onChange={(value) => setFormData(prev => ({ ...prev, angry: value }))}
-          />
-        </Card>
+          {/* Question 3-5: Meters */}
+          <Card className="p-6 bg-white/30 dark:bg-white/5 border-warm-text/10 space-y-6">
+            <FormField
+              control={form.control}
+              name="missYou"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Miss You Meter</FormLabel>
+                  <FormControl>
+                    <RangeSlider
+                      label="Miss You Meter"
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="horny"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Horny Meter</FormLabel>
+                  <FormControl>
+                    <RangeSlider
+                      label="Horny Meter"
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="angry"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Angry Meter</FormLabel>
+                  <FormControl>
+                    <RangeSlider
+                      label="Angry Meter"
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          </Card>
 
-        {/* Question 6: Events */}
-        <Card className="p-6 bg-white/30 dark:bg-white/5 border-warm-text/10">
-          <h3 className="text-lg font-medium mb-4 text-warm-text dark:text-warm-text">
-            Any bumps or wins you'd like to note?
-          </h3>
-          <div className="space-y-3">
-            {eventOptions.map(option => (
-              <div key={option.id} className="flex items-center space-x-2">
-                <Checkbox
-                  id={option.id}
-                  checked={formData.events.includes(option.id)}
-                  onCheckedChange={(checked) => handleEventChange(option.id, !!checked)}
-                />
-                <Label htmlFor={option.id} className="text-warm-text dark:text-warm-text">
-                  {option.label}
-                </Label>
-              </div>
-            ))}
-          </div>
-        </Card>
+          {/* Question 6: Events */}
+          <Card className="p-6 bg-white/30 dark:bg-white/5 border-warm-text/10">
+            <FormField
+              control={form.control}
+              name="events"
+              render={() => (
+                <FormItem>
+                  <FormLabel>Any bumps or wins you'd like to note?</FormLabel>
+                  <div className="space-y-3">
+                    {eventOptions.map(option => (
+                      <div key={option.id} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={option.id}
+                          checked={form.watch('events').includes(option.id)}
+                          onCheckedChange={(checked) => handleEventChange(option.id, !!checked)}
+                        />
+                        <Label htmlFor={option.id} className="text-warm-text dark:text-warm-text">
+                          {option.label}
+                        </Label>
+                      </div>
+                    ))}
+                  </div>
+                </FormItem>
+              )}
+            />
+          </Card>
 
-        {/* Question 7: Message */}
-        <Card className="p-6 bg-white/30 dark:bg-white/5 border-warm-text/10">
-          <h3 className="text-lg font-medium mb-4 text-warm-text dark:text-warm-text">
-            Message *
-          </h3>
-          <Textarea
-            value={formData.message}
-            onChange={(e) => setFormData(prev => ({ ...prev, message: e.target.value }))}
-            placeholder="What's on your heart today?"
-            className="bg-white/50 dark:bg-white/10 border-warm-text/20 text-warm-text dark:text-warm-text placeholder:text-warm-text/50 min-h-24"
-          />
-        </Card>
+          {/* Question 7: Message */}
+          <Card className="p-6 bg-white/30 dark:bg-white/5 border-warm-text/10">
+            <FormField
+              control={form.control}
+              name="message"
+              rules={{ required: "Please enter a message" }}
+              render={({ field }) => (
+                <FormItem>
+                  <RequiredFormLabel>Message</RequiredFormLabel>
+                  <FormControl>
+                    <Textarea
+                      {...field}
+                      placeholder="What's on your heart today?"
+                      className="bg-white/50 dark:bg-white/10 border-warm-text/20 text-warm-text dark:text-warm-text placeholder:text-warm-text/50 min-h-24"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </Card>
 
-        {/* Question 8: Response Type */}
-        <Card className="p-6 bg-white/30 dark:bg-white/5 border-warm-text/10">
-          <h3 className="text-lg font-medium mb-4 text-warm-text dark:text-warm-text">
-            If you want me to respond in a certain way, let me know here:
-          </h3>
-          <RadioGroup
-            value={formData.responseType}
-            onValueChange={(value) => setFormData(prev => ({ ...prev, responseType: value }))}
-            className="space-y-2"
+          {/* Question 8: Response Type */}
+          <Card className="p-6 bg-white/30 dark:bg-white/5 border-warm-text/10">
+            <FormField
+              control={form.control}
+              name="responseType"
+              render={({ field }) => (
+                <FormItem>
+                  <Label>If you want me to respond in a certain way, let me know here</Label>
+                  <FormControl>
+                    <RadioGroup
+                      onValueChange={field.onChange}
+                      value={field.value}
+                      className="space-y-2"
+                    >
+                      {responseOptions.map(option => (
+                        <div key={option} className="flex items-center space-x-2">
+                          <RadioGroupItem value={option} id={option} />
+                          <Label htmlFor={option} className="text-warm-text dark:text-warm-text">
+                            {option}
+                          </Label>
+                        </div>
+                      ))}
+                    </RadioGroup>
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          </Card>
+
+          {/* Submit Button */}
+          <Button
+            type="submit"
+            disabled={isSubmitting}
+            className={`w-full py-4 text-lg font-medium transition-all duration-300 ${isSubmitting ? 'gentle-bounce' : ''
+              } bg-soft-pink hover:bg-soft-pink/90 text-warm-text border-0 rounded-xl shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed`}
           >
-            {responseOptions.map(option => (
-              <div key={option} className="flex items-center space-x-2">
-                <RadioGroupItem value={option} id={option} />
-                <Label htmlFor={option} className="text-warm-text dark:text-warm-text">
-                  {option}
-                </Label>
-              </div>
-            ))}
-          </RadioGroup>
-        </Card>
-
-        {/* Submit Button */}
-        <Button
-          type="submit"
-          disabled={!isFormValid || isSubmitting}
-          className={`w-full py-4 text-lg font-medium transition-all duration-300 ${isSubmitting ? 'gentle-bounce' : ''
-            } bg-soft-pink hover:bg-soft-pink/90 text-warm-text border-0 rounded-xl shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed`}
-        >
-          {isSubmitting ? 'Sending to Vaibhav...' : 'Send to Vaibhav ♥'}
-        </Button>
-      </form>
+            {isSubmitting ? 'Sending to Vaibhav...' : 'Send to Vaibhav ♥'}
+          </Button>
+        </form>
+      </Form>
     </div>
   );
 };
