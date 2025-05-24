@@ -38,7 +38,7 @@ const ThoughtDropForm: React.FC<ThoughtDropFormProps> = ({ onSubmit }) => {
 
   const nameOptions = [
     'Pari',
-    'Chhota Bachcha',
+    'Chhota bachcha',
     'Baby girl',
     'Princess',
     "Parvati",
