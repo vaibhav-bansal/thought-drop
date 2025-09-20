@@ -1,4 +1,5 @@
 import emailjs from '@emailjs/browser';
+import { config, getEmailJSTemplateId, isEmailJSConfigured } from './config';
 
 // Re-export the FormData interface to maintain consistency
 export interface FormData {
@@ -13,31 +14,23 @@ export interface FormData {
 }
 
 // Environment configuration
-const isTestEnv = import.meta.env.VITE_APP_ENV === 'test';
-
-// Get template ID based on environment
-const getTemplateId = () => {
-  if (isTestEnv) {
-    return import.meta.env.VITE_EMAILJS_TEST_TEMPLATE_ID || import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
-  }
-  return import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
-};
+const isTestEnv = config.emailjs.appEnv === 'test';
 
 // Log environment configuration on initialization
 console.log('EmailJS Environment:', {
   environment: isTestEnv ? 'TEST' : 'PRODUCTION',
-  serviceId: import.meta.env.VITE_EMAILJS_SERVICE_ID,
-  templateId: getTemplateId(),
-  hasTestTemplate: !!import.meta.env.VITE_EMAILJS_TEST_TEMPLATE_ID,
-  appEnv: import.meta.env.VITE_APP_ENV
+  serviceId: config.emailjs.serviceId,
+  templateId: getEmailJSTemplateId(),
+  hasTestTemplate: !!config.emailjs.testTemplateId,
+  appEnv: config.emailjs.appEnv,
+  isConfigured: isEmailJSConfigured()
 });
 
-// Emoji and label mappings
-const emojis = ['😢', '😔', '😕', '😠', '😐', '😊', '😄', '😍', '🥰', '😈'];
-const labels = ['Very Sad', 'Sad', 'Down', 'Angry', 'Neutral', 'Happy', 'Joyful', 'Loving', 'Adoring', 'Naughty'];
+// Emoji and label mappings (using defaults for now, can be made configurable later)
+const emojis = config.advanced?.emotionEmojis || ['😢', '😔', '😕', '😠', '😐', '😊', '😄', '😍', '🥰', '😈'];
+const labels = config.advanced?.emotionLabels || ['Very Sad', 'Sad', 'Down', 'Angry', 'Neutral', 'Happy', 'Joyful', 'Loving', 'Adoring', 'Naughty'];
 
-
-// Event type mappings
+// Event type mappings (using defaults for now, can be made configurable later)
 const eventMappings: Record<string, string> = {
   'small-win': 'Small win 🌟',
   'tough-moment': 'Tough moment 💭',
@@ -47,7 +40,11 @@ const eventMappings: Record<string, string> = {
 };
 
 // Initialize EmailJS with public key
-emailjs.init(import.meta.env.VITE_EMAILJS_PUBLIC_KEY);
+if (isEmailJSConfigured()) {
+  emailjs.init(config.emailjs.publicKey);
+} else {
+  console.warn('EmailJS not properly configured. Please check your environment variables.');
+}
 
 /**
  * Sends a thought drop email using EmailJS
@@ -91,8 +88,8 @@ export const sendThoughtDrop = async (formData: FormData): Promise<void> => {
 
     // Send the email
     const response = await emailjs.send(
-      import.meta.env.VITE_EMAILJS_SERVICE_ID,
-      getTemplateId(),
+      config.emailjs.serviceId,
+      getEmailJSTemplateId(),
       templateParams
     );
 

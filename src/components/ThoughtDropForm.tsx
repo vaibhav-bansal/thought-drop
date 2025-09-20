@@ -14,6 +14,7 @@ import { Heart } from 'lucide-react';
 import { sendThoughtDrop, FormData } from '@/lib/emailService';
 import { useToast } from "@/hooks/use-toast";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { config } from '@/lib/config';
 
 interface ThoughtDropFormProps {
   onSubmit: (data: FormData) => void;
@@ -36,18 +37,7 @@ const ThoughtDropForm: React.FC<ThoughtDropFormProps> = ({ onSubmit }) => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const nameOptions = [
-    'Pari',
-    'Chhota bachcha',
-    'Baby girl',
-    'Princess',
-    "Parvati",
-    "Goddess",
-    'Strong independent woman',
-    "Daddy's girl",
-    'Little demon',
-    'Man-hater'
-  ];
+  const nameOptions = config.nameOptions;
 
   const eventOptions = [
     { id: 'small-win', label: 'Small win 🌟' },
@@ -293,7 +283,7 @@ const ThoughtDropForm: React.FC<ThoughtDropFormProps> = ({ onSubmit }) => {
             className={`w-full py-4 text-lg font-medium transition-all duration-300 ${isSubmitting ? 'gentle-bounce' : ''
               } bg-soft-pink hover:bg-soft-pink/90 text-warm-text border-0 rounded-xl shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed`}
           >
-            {isSubmitting ? 'Sending to Vaibhav...' : 'Send to Vaibhav ♥'}
+            {isSubmitting ? 'Sending...' : 'Submit ♥'}
           </Button>
         </form>
       </Form>
