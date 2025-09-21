@@ -6,10 +6,8 @@ export interface FormData {
   feeling: number;
   name: string;
   missYou: number;
-  horny: number;
-  angry: number;
   events: string[];
-  message: string;
+  message?: string;
   responseType: string;
 }
 
@@ -26,24 +24,21 @@ console.log('EmailJS Environment:', {
   isConfigured: isEmailJSConfigured()
 });
 
-// Emoji and label mappings (using defaults for now, can be made configurable later)
-const emojis = config.advanced?.emotionEmojis || ['😢', '😔', '😕', '😠', '😐', '😊', '😄', '😍', '🥰', '😈'];
-const labels = config.advanced?.emotionLabels || ['Very Sad', 'Sad', 'Down', 'Angry', 'Neutral', 'Happy', 'Joyful', 'Loving', 'Adoring', 'Naughty'];
+// Emoji and label mappings (using config)
+const emojis = config.personalization.emotionEmojis;
+const labels = config.personalization.emotionLabels;
 
-// Event type mappings (using defaults for now, can be made configurable later)
-const eventMappings: Record<string, string> = {
-  'small-win': 'Small win 🌟',
-  'tough-moment': 'Tough moment 💭',
-  'need-hug': 'Need a hug 🤗',
-  'proud': 'Proud of myself ✨',
-  'other': 'Other'
-};
+// Event type mappings (using config)
+const eventMappings: Record<string, string> = {};
+config.personalization.eventOptions.forEach((option, index) => {
+  eventMappings[`event-${index}`] = option;
+});
 
 // Initialize EmailJS with public key
 if (isEmailJSConfigured()) {
   emailjs.init(config.emailjs.publicKey);
 } else {
-  console.warn('EmailJS not properly configured. Please check your environment variables.');
+  console.warn('EmailJS not properly configured. Please check your configuration in /config/app.json.');
 }
 
 /**
@@ -54,21 +49,14 @@ if (isEmailJSConfigured()) {
  */
 export const sendThoughtDrop = async (formData: FormData): Promise<void> => {
   try {
-    // Validate required fields
-    if (!formData.message.trim()) {
-      throw new Error('Message is required');
-    }
-
     // Prepare template parameters
     const templateParams = {
       feeling_emoji: emojis[formData.feeling],
       feeling_label: labels[formData.feeling],
       name: formData.name,
       miss_you_meter: formData.missYou,
-      horny_meter: formData.horny,
-      angry_meter: formData.angry,
       events: formData.events.map(eventId => eventMappings[eventId] || eventId).join(', '),
-      message: formData.message,
+      message: formData.message || 'No message provided',
       response_type: formData.responseType,
       timestamp: new Date().toLocaleString('en-IN', {
         weekday: 'long',
@@ -86,7 +74,23 @@ export const sendThoughtDrop = async (formData: FormData): Promise<void> => {
     // Log the data being sent (for debugging)
     console.log(`Sending email in ${isTestEnv ? 'TEST' : 'PRODUCTION'} mode:`, templateParams);
 
-    // Send the email
+    // Handle test mode - simulate successful email sending
+    if (isTestEnv) {
+      console.log('🧪 TEST MODE: Simulating successful email send');
+      console.log('📧 Email would contain:', templateParams);
+      
+      // Simulate a delay like a real email service
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      console.log('✅ TEST: Email "sent" successfully!');
+      return;
+    }
+
+    // Production mode - actually send the email
+    if (!isEmailJSConfigured()) {
+      throw new Error('EmailJS not properly configured. Please check your configuration in /config/app.json.');
+    }
+
     const response = await emailjs.send(
       config.emailjs.serviceId,
       getEmailJSTemplateId(),

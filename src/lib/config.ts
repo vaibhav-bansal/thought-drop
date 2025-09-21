@@ -1,12 +1,34 @@
 // Configuration service for Thought Drop
 // Handles essential customizations for open-source deployment
 
+interface MeterConfig {
+  label: string;
+  min: number;
+  max: number;
+  default: number;
+}
+
 interface AppConfig {
-  // Essential customizations
-  appAuthor: string;
-  nameOptions: string[];
+  app: {
+    author: string;
+    name: string;
+    title: string;
+    displayName: string;
+    subtitle: string;
+    description: string;
+  };
   
-  // EmailJS (required)
+  personalization: {
+    nameOptions: string[];
+    emotionEmojis: string[];
+    emotionLabels: string[];
+    meters: {
+      missYou: MeterConfig;
+    };
+    eventOptions: string[];
+    responseOptions: string[];
+  };
+  
   emailjs: {
     publicKey: string;
     serviceId: string;
@@ -14,48 +36,145 @@ interface AppConfig {
     testTemplateId?: string;
     appEnv: string;
   };
-  
-  // Advanced customizations (optional)
-  advanced?: {
-    appName?: string;
-    appTitle?: string;
-    appDisplayName?: string;
-    appSubtitle?: string;
-    appDescription?: string;
-    emotionEmojis?: string[];
-    emotionLabels?: string[];
-    eventOptions?: string[];
-    responseOptions?: string[];
-  };
 }
 
-export const config: AppConfig = {
-  // Essential
-  appAuthor: import.meta.env.VITE_APP_AUTHOR || 'Your Name',
-  nameOptions: (import.meta.env.VITE_NAME_OPTIONS || 'Princess,Baby,Good girl,Sweetheart,Love').split(','),
-  
-  // EmailJS
-  emailjs: {
-    publicKey: import.meta.env.VITE_EMAILJS_PUBLIC_KEY || '',
-    serviceId: import.meta.env.VITE_EMAILJS_SERVICE_ID || '',
-    templateId: import.meta.env.VITE_EMAILJS_TEMPLATE_ID || '',
-    testTemplateId: import.meta.env.VITE_EMAILJS_TEST_TEMPLATE_ID,
-    appEnv: import.meta.env.VITE_APP_ENV || 'production'
+// Default configuration (fallback)
+const defaultConfig: AppConfig = {
+  app: {
+    author: 'Your Name',
+    name: 'thought-drop',
+    title: 'Thought Drop',
+    displayName: 'Thought Drop',
+    subtitle: 'A safe space for your heart',
+    description: 'A safe space for your thoughts'
   },
-  
-  // Advanced (optional)
-  advanced: {
-    appName: import.meta.env.VITE_APP_NAME,
-    appTitle: import.meta.env.VITE_APP_TITLE,
-    appDisplayName: import.meta.env.VITE_APP_DISPLAY_NAME,
-    appSubtitle: import.meta.env.VITE_APP_SUBTITLE,
-    appDescription: import.meta.env.VITE_APP_DESCRIPTION,
-    emotionEmojis: import.meta.env.VITE_EMOTION_EMOJIS?.split(','),
-    emotionLabels: import.meta.env.VITE_EMOTION_LABELS?.split(','),
-    eventOptions: import.meta.env.VITE_EVENT_OPTIONS?.split(','),
-    responseOptions: import.meta.env.VITE_RESPONSE_OPTIONS?.split(',')
+  personalization: {
+    nameOptions: ['Princess', 'Baby', 'Good girl', 'Sweetheart', 'Love'],
+    emotionEmojis: ['😢', '😔', '😕', '😠', '😐', '😊', '😄', '😍', '🥰', '😈'],
+    emotionLabels: ['Very Sad', 'Sad', 'Down', 'Angry', 'Neutral', 'Happy', 'Joyful', 'Loving', 'Adoring', 'Naughty'],
+      meters: {
+        missYou: { label: 'Miss You Meter', min: 0, max: 10, default: 5 }
+      },
+    eventOptions: ['Small win 🌟', 'Tough moment 💭', 'Need a hug 🤗', 'Proud of myself ✨', 'Other'],
+    responseOptions: ['Listen only', 'Advice welcome', 'Hype me up', 'Check on me later']
+  },
+  emailjs: {
+    publicKey: '',
+    serviceId: '',
+    templateId: '',
+    testTemplateId: '',
+    appEnv: 'production'
   }
 };
+
+// Configuration validation function
+function validateConfig(configData: unknown): AppConfig {
+  try {
+    // Deep merge with defaults to ensure all required fields exist
+    const mergedConfig = deepMerge(defaultConfig, configData as Record<string, unknown>);
+    
+    // Validate required fields
+    if (!mergedConfig.app?.author) {
+      console.warn('Missing app.author, using default');
+      mergedConfig.app.author = defaultConfig.app.author;
+    }
+    
+    if (!mergedConfig.personalization?.nameOptions?.length) {
+      console.warn('Missing or empty personalization.nameOptions, using default');
+      mergedConfig.personalization.nameOptions = defaultConfig.personalization.nameOptions;
+    }
+    
+    if (!mergedConfig.personalization?.emotionEmojis?.length) {
+      console.warn('Missing or empty personalization.emotionEmojis, using default');
+      mergedConfig.personalization.emotionEmojis = defaultConfig.personalization.emotionEmojis;
+    }
+    
+    if (!mergedConfig.personalization?.emotionLabels?.length) {
+      console.warn('Missing or empty personalization.emotionLabels, using default');
+      mergedConfig.personalization.emotionLabels = defaultConfig.personalization.emotionLabels;
+    }
+    
+    // Validate meters
+    if (!mergedConfig.personalization?.meters) {
+      console.warn('Missing personalization.meters, using default');
+      mergedConfig.personalization.meters = defaultConfig.personalization.meters;
+    } else {
+      // Validate each meter
+      ['missYou'].forEach(meterKey => {
+        if (!mergedConfig.personalization.meters[meterKey as keyof typeof mergedConfig.personalization.meters]) {
+          console.warn(`Missing meter ${meterKey}, using default`);
+          mergedConfig.personalization.meters[meterKey as keyof typeof mergedConfig.personalization.meters] = defaultConfig.personalization.meters[meterKey as keyof typeof defaultConfig.personalization.meters];
+        }
+      });
+    }
+    
+    return mergedConfig;
+  } catch (error) {
+    console.error('Config validation failed, using default configuration:', error);
+    return defaultConfig;
+  }
+}
+
+// Deep merge utility function
+function deepMerge(target: AppConfig, source: Record<string, unknown>): AppConfig {
+  const result = { ...target };
+  
+  for (const key in source) {
+    if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])) {
+      if (key === 'app' && result.app) {
+        result.app = { ...result.app, ...(source[key] as Record<string, unknown>) } as AppConfig['app'];
+      } else if (key === 'personalization' && result.personalization) {
+        result.personalization = { ...result.personalization, ...(source[key] as Record<string, unknown>) } as AppConfig['personalization'];
+      } else if (key === 'emailjs' && result.emailjs) {
+        result.emailjs = { ...result.emailjs, ...(source[key] as Record<string, unknown>) } as AppConfig['emailjs'];
+      }
+    } else {
+      // Handle primitive values
+      if (key === 'app' && typeof source[key] === 'object') {
+        result.app = { ...result.app, ...(source[key] as Record<string, unknown>) } as AppConfig['app'];
+      } else if (key === 'personalization' && typeof source[key] === 'object') {
+        result.personalization = { ...result.personalization, ...(source[key] as Record<string, unknown>) } as AppConfig['personalization'];
+      } else if (key === 'emailjs' && typeof source[key] === 'object') {
+        result.emailjs = { ...result.emailjs, ...(source[key] as Record<string, unknown>) } as AppConfig['emailjs'];
+      }
+    }
+  }
+  
+  return result;
+}
+
+// Configuration state
+let config: AppConfig = defaultConfig;
+let configLoaded = false;
+
+// Configuration loader function
+async function loadConfig(): Promise<AppConfig> {
+  if (configLoaded) {
+    return config;
+  }
+
+  try {
+    // Try to load config from public folder
+    const response = await fetch('/config/app.json');
+    if (response.ok) {
+      const configData = await response.json();
+      config = validateConfig(configData);
+      configLoaded = true;
+      console.log('Configuration loaded and validated from /config/app.json');
+      return config;
+    }
+  } catch (error) {
+    console.warn('Failed to load config/app.json, using default configuration:', error);
+  }
+  
+  configLoaded = true;
+  return config;
+}
+
+// Initialize config loading
+loadConfig();
+
+export { config, loadConfig };
 
 // Helper function to get EmailJS template ID based on environment
 export const getEmailJSTemplateId = (): string => {

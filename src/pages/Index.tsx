@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import ThoughtDropForm from '@/components/ThoughtDropForm';
 import ConfirmationScreen from '@/components/ConfirmationScreen';
+import { FormData } from '@/lib/emailService';
 
 const Index = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -14,11 +15,11 @@ const Index = () => {
     document.documentElement.classList.toggle('dark', savedDarkMode);
   }, []);
 
-  const handleFormSubmit = (formData: any) => {
+  const handleFormSubmit = (formData: FormData) => {
     console.log('Form submitted:', formData);
     
-    // TODO: In a real app, this would send data to a backend
-    // For now, we'll just log it and show success
+    // Form submission handled by ThoughtDropForm component
+    // The actual email sending is done via EmailJS in the form component
     
     setIsSubmitted(true);
   };

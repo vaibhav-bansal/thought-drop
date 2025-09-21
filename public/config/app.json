@@ -1,0 +1,71 @@
+{
+  "app": {
+    "author": "Your Name",
+    "name": "thought-drop",
+    "title": "Thought Drop",
+    "displayName": "Thought Drop",
+    "subtitle": "A safe space for your heart",
+    "description": "A safe space for your thoughts"
+  },
+  "personalization": {
+    "nameOptions": [
+      "Princess",
+      "Baby",
+      "Good girl",
+      "Sweetheart",
+      "Love"
+    ],
+    "emotionEmojis": [
+      "😢",
+      "😔",
+      "😕",
+      "😠",
+      "😐",
+      "😊",
+      "😄",
+      "😍",
+      "🥰",
+      "😈"
+    ],
+    "emotionLabels": [
+      "Very Sad",
+      "Sad",
+      "Down",
+      "Angry",
+      "Neutral",
+      "Happy",
+      "Joyful",
+      "Loving",
+      "Adoring",
+      "Naughty"
+    ],
+    "meters": {
+      "missYou": {
+        "label": "Miss You Meter",
+        "min": 0,
+        "max": 10,
+        "default": 5
+      }
+    },
+    "eventOptions": [
+      "Small win 🌟",
+      "Tough moment 💭",
+      "Need a hug 🤗",
+      "Proud of myself ✨",
+      "Other"
+    ],
+    "responseOptions": [
+      "Listen only",
+      "Advice welcome",
+      "Hype me up",
+      "Check on me later"
+    ]
+  },
+  "emailjs": {
+    "publicKey": "test-key",
+    "serviceId": "test-service",
+    "templateId": "test-template",
+    "testTemplateId": "test-template",
+    "appEnv": "test"
+  }
+}

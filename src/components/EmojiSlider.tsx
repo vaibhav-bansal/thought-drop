@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Slider } from '@/components/ui/slider';
+import { config } from '@/lib/config';
 
 interface EmojiSliderProps {
   value: number;
@@ -8,8 +9,8 @@ interface EmojiSliderProps {
 }
 
 const EmojiSlider: React.FC<EmojiSliderProps> = ({ value, onChange }) => {
-  const emojis = ['😢', '😔', '😕', '😠', '😐', '😊', '😄', '😍', '🥰', '😈'];
-  const labels = ['Very Sad', 'Sad', 'Down', 'Angry', 'Neutral', 'Happy', 'Joyful', 'Loving', 'Adoring', 'Naughty'];
+  const emojis = config.personalization.emotionEmojis;
+  const labels = config.personalization.emotionLabels;
 
   return (
     <div className="space-y-4">
@@ -20,7 +21,7 @@ const EmojiSlider: React.FC<EmojiSliderProps> = ({ value, onChange }) => {
       <Slider
         value={[value]}
         onValueChange={(values) => onChange(values[0])}
-        max={9}
+        max={emojis.length - 1}
         min={0}
         step={1}
         className="w-full"
