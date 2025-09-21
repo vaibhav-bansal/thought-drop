@@ -26,9 +26,9 @@ const ThoughtDropForm: React.FC<ThoughtDropFormProps> = ({ onSubmit }) => {
     defaultValues: {
       feeling: 5,
       name: undefined,
-      missYou: 5,
-      horny: 2,
-      angry: 0,
+      missYou: config.personalization.meters.missYou.default,
+      horny: config.personalization.meters.horny.default,
+      angry: config.personalization.meters.angry.default,
       events: [],
       message: undefined,
       responseType: undefined
@@ -37,22 +37,14 @@ const ThoughtDropForm: React.FC<ThoughtDropFormProps> = ({ onSubmit }) => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const nameOptions = config.nameOptions;
+  const nameOptions = config.personalization.nameOptions;
 
-  const eventOptions = [
-    { id: 'small-win', label: 'Small win 🌟' },
-    { id: 'tough-moment', label: 'Tough moment 💭' },
-    { id: 'need-hug', label: 'Need a hug 🤗' },
-    { id: 'proud', label: 'Proud of myself ✨' },
-    { id: 'other', label: 'Other' }
-  ];
+  const eventOptions = config.personalization.eventOptions.map((option, index) => ({
+    id: `event-${index}`,
+    label: option
+  }));
 
-  const responseOptions = [
-    'Listen only',
-    'Advice welcome',
-    'Hype me up',
-    'Check on me later'
-  ];
+  const responseOptions = config.personalization.responseOptions;
 
   const handleEventChange = (eventId: string, checked: boolean) => {
     const currentEvents = form.getValues('events');
@@ -153,12 +145,14 @@ const ThoughtDropForm: React.FC<ThoughtDropFormProps> = ({ onSubmit }) => {
               name="missYou"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Miss You Meter</FormLabel>
+                  <FormLabel>{config.personalization.meters.missYou.label}</FormLabel>
                   <FormControl>
                     <RangeSlider
-                      label="Miss You Meter"
+                      label={config.personalization.meters.missYou.label}
                       value={field.value}
                       onChange={field.onChange}
+                      min={config.personalization.meters.missYou.min}
+                      max={config.personalization.meters.missYou.max}
                     />
                   </FormControl>
                 </FormItem>
@@ -169,12 +163,14 @@ const ThoughtDropForm: React.FC<ThoughtDropFormProps> = ({ onSubmit }) => {
               name="horny"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Horny Meter</FormLabel>
+                  <FormLabel>{config.personalization.meters.horny.label}</FormLabel>
                   <FormControl>
                     <RangeSlider
-                      label="Horny Meter"
+                      label={config.personalization.meters.horny.label}
                       value={field.value}
                       onChange={field.onChange}
+                      min={config.personalization.meters.horny.min}
+                      max={config.personalization.meters.horny.max}
                     />
                   </FormControl>
                 </FormItem>
@@ -185,12 +181,14 @@ const ThoughtDropForm: React.FC<ThoughtDropFormProps> = ({ onSubmit }) => {
               name="angry"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Angry Meter</FormLabel>
+                  <FormLabel>{config.personalization.meters.angry.label}</FormLabel>
                   <FormControl>
                     <RangeSlider
-                      label="Angry Meter"
+                      label={config.personalization.meters.angry.label}
                       value={field.value}
                       onChange={field.onChange}
+                      min={config.personalization.meters.angry.min}
+                      max={config.personalization.meters.angry.max}
                     />
                   </FormControl>
                 </FormItem>

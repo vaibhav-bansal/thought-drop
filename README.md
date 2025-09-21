@@ -36,26 +36,29 @@ cd thought-drop
 npm install
 ```
 
-### 2. Configure Environment
+### 2. Configure Your App
 ```bash
-# Copy the example environment file
-cp docs/env.example .env.local
+# Copy the example configuration file
+cp public/config/app.example.json public/config/app.json
 
-# Edit .env.local with your settings
-VITE_APP_AUTHOR=Your Name
-VITE_NAME_OPTIONS=Princess,Baby,Good girl,Sweetheart,Love
+# Edit public/config/app.json with your settings
+# Update the app.author and personalization.nameOptions
 ```
 
 ### 3. Set Up EmailJS (Required)
 1. Create a free account at [EmailJS](https://dashboard.emailjs.com)
 2. Create an email service (Gmail, Outlook, etc.)
 3. Create an email template
-4. Add your credentials to `.env.local`:
-```bash
-VITE_EMAILJS_PUBLIC_KEY=your_public_key_here
-VITE_EMAILJS_SERVICE_ID=your_service_id_here
-VITE_EMAILJS_TEMPLATE_ID=your_template_id_here
-VITE_APP_ENV=production
+4. Add your credentials to `public/config/app.json`:
+```json
+{
+  "emailjs": {
+    "publicKey": "your_public_key_here",
+    "serviceId": "your_service_id_here",
+    "templateId": "your_template_id_here",
+    "appEnv": "production"
+  }
+}
 ```
 
 ### 4. Start Development Server
@@ -63,33 +66,40 @@ VITE_APP_ENV=production
 npm run dev
 ```
 
-Open [http://localhost:8080](http://localhost:8080) and start sharing thoughts! 💕
+Open [http://localhost:8081](http://localhost:8081) and start sharing thoughts! 💕
 
 ## 🛠️ Customization Options
 
+All customization is done through the `public/config/app.json` file. Here's what you can customize:
+
 ### Essential Customizations (Required)
-- **`VITE_APP_AUTHOR`** - Your name (appears in meta tags)
-- **`VITE_NAME_OPTIONS`** - Partner nicknames (comma-separated)
+- **`app.author`** - Your name (appears in meta tags)
+- **`personalization.nameOptions`** - Partner nicknames (array of strings)
 
 ### Advanced Customizations (Optional)
-Uncomment these in `.env.local` to customize further:
-```bash
-# App Branding
-VITE_APP_NAME=thought-drop
-VITE_APP_TITLE=Thought Drop
-VITE_APP_DISPLAY_NAME=Thought Drop
-VITE_APP_SUBTITLE=A safe space for your heart
-VITE_APP_DESCRIPTION=A safe space for your thoughts
-
-# Emotion Customization
-VITE_EMOTION_EMOJIS=😢,😔,😕,😠,😐,😊,😄,😍,🥰,😈
-VITE_EMOTION_LABELS=Very Sad,Sad,Down,Angry,Neutral,Happy,Joyful,Loving,Adoring,Naughty
-
-# Event Types
-VITE_EVENT_OPTIONS=Small win 🌟,Tough moment 💭,Need a hug 🤗,Proud of myself ✨,Other
-
-# Response Types
-VITE_RESPONSE_OPTIONS=Listen only,Advice welcome,Hype me up,Check on me later
+```json
+{
+  "app": {
+    "author": "Your Name",
+    "name": "thought-drop",
+    "title": "Thought Drop",
+    "displayName": "Thought Drop",
+    "subtitle": "A safe space for your heart",
+    "description": "A safe space for your thoughts"
+  },
+  "personalization": {
+    "nameOptions": ["Princess", "Baby", "Good girl", "Sweetheart", "Love"],
+    "emotionEmojis": ["😢", "😔", "😕", "😠", "😐", "😊", "😄", "😍", "🥰", "😈"],
+    "emotionLabels": ["Very Sad", "Sad", "Down", "Angry", "Neutral", "Happy", "Joyful", "Loving", "Adoring", "Naughty"],
+    "meters": {
+      "missYou": { "label": "Miss You Meter", "min": 0, "max": 10, "default": 5 },
+      "horny": { "label": "Horny Meter", "min": 0, "max": 10, "default": 5 },
+      "angry": { "label": "Angry Meter", "min": 0, "max": 10, "default": 5 }
+    },
+    "eventOptions": ["Small win 🌟", "Tough moment 💭", "Need a hug 🤗", "Proud of myself ✨", "Other"],
+    "responseOptions": ["Listen only", "Advice welcome", "Hype me up", "Check on me later"]
+  }
+}
 ```
 
 ## 🚀 Deployment
@@ -97,14 +107,14 @@ VITE_RESPONSE_OPTIONS=Listen only,Advice welcome,Hype me up,Check on me later
 ### Option 1: Netlify (Recommended)
 1. Push your code to GitHub
 2. Connect your repository to [Netlify](https://netlify.com)
-3. Add environment variables in Netlify dashboard
-4. Deploy automatically on every push
+3. Deploy automatically on every push
+4. Update `public/config/app.json` with your settings
 
 ### Option 2: Vercel
 1. Push your code to GitHub
 2. Connect your repository to [Vercel](https://vercel.com)
-3. Add environment variables in Vercel dashboard
-4. Deploy automatically on every push
+3. Deploy automatically on every push
+4. Update `public/config/app.json` with your settings
 
 ### Option 3: Manual Deployment
 ```bash
@@ -117,11 +127,12 @@ npm run build
 ## 🏗️ Tech Stack
 
 - **Frontend**: React 18 + TypeScript
-- **Build Tool**: Vite
+- **Build Tool**: Vite 5.4.20
 - **Styling**: Tailwind CSS + shadcn/ui
 - **Forms**: React Hook Form
 - **Email**: EmailJS
-- **Icons**: Lucide React
+- **Icons**: Lucide React (latest)
+- **Configuration**: JSON-based config system
 
 ## 📁 Project Structure
 
@@ -129,13 +140,13 @@ npm run build
 thought-drop/
 ├── src/
 │   ├── components/          # React components
-│   ├── hooks/              # Custom React hooks
-│   ├── lib/                # Configuration and utilities
-│   ├── pages/              # Page components
-│   └── types/              # TypeScript type definitions
-├── docs/
-│   └── env.example         # Environment variables template
-├── public/                 # Static assets
+│   ├── lib/                 # Configuration and utilities
+│   ├── pages/               # Page components
+│   └── types/               # TypeScript type definitions
+├── public/
+│   └── config/              # JSON configuration files
+│       ├── app.json         # Main configuration
+│       └── app.example.json # Example configuration
 └── README.md
 ```
 
@@ -143,14 +154,37 @@ thought-drop/
 
 ### Available Scripts
 ```bash
-npm run dev          # Start development server
+npm run dev          # Start development server (port 8081)
 npm run build        # Build for production
 npm run preview      # Preview production build
 npm run lint         # Run ESLint
+npm run type-check   # Run TypeScript type checking
 ```
 
-### Environment Variables
-See `docs/env.example` for all available configuration options.
+### Configuration System
+All configuration is done through JSON files in `public/config/`:
+- **`app.json`** - Your main configuration file
+- **`app.example.json`** - Example configuration with sample values
+
+No environment variables needed! 🎉
+
+## 🆕 Recent Updates
+
+### v2.0 - JSON Configuration System
+- ✅ **Migrated from environment variables to JSON config files**
+- ✅ **Added configurable emotion meters** (Miss You, Horny, Angry)
+- ✅ **Improved configuration validation** with fallbacks
+- ✅ **Updated all dependencies** to latest versions
+- ✅ **Enhanced code quality** with better TypeScript types
+- ✅ **Simplified deployment** - no more `.env` files needed
+- ✅ **Better error handling** and user feedback
+
+### Key Improvements
+- **🎯 Easier Setup**: Copy one JSON file instead of managing environment variables
+- **🔧 Better Customization**: Configure meters, emotions, and all options in one place
+- **📦 Cleaner Codebase**: Removed unused code and improved type safety
+- **🚀 Faster Development**: Hot reloading for configuration changes
+- **🛡️ More Robust**: Automatic validation and fallback configurations
 
 ## 🤝 Contributing
 
@@ -161,6 +195,35 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
+
+## 🔧 Troubleshooting
+
+### Common Issues
+
+**Q: The app shows default configuration instead of my custom settings**
+- Make sure you've copied `app.example.json` to `app.json`
+- Check that your JSON syntax is valid (no trailing commas, proper quotes)
+- Verify the file is in `public/config/app.json`
+
+**Q: EmailJS is not working**
+- Ensure your EmailJS credentials are correctly set in `app.json`
+- Check that your EmailJS service and template are active
+- Verify your public key, service ID, and template ID are correct
+
+**Q: Development server won't start**
+- Run `npm install` to ensure all dependencies are installed
+- Check that port 8081 is not already in use
+- Try `npm run build` to check for compilation errors
+
+**Q: Build fails**
+- Run `npm run type-check` to check for TypeScript errors
+- Run `npm run lint` to check for code quality issues
+- Ensure all imports are correct and files exist
+
+### Getting Help
+- Check the browser console for error messages
+- Verify your configuration file syntax
+- Make sure all required fields are present in `app.json`
 
 ## ⚠️ Important: Proper Attribution
 
@@ -191,9 +254,18 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 If you found this project helpful, please consider:
 - ⭐ Starring the repository
-- 🐛 Reporting bugs
-- 💡 Suggesting new features
-- 🤝 Contributing code
+- 🐛 Reporting bugs or configuration issues
+- 💡 Suggesting new features or improvements
+- 🤝 Contributing code or documentation
+- 📝 Sharing your custom configurations
+
+### Feature Requests
+We're always looking to improve! Some ideas for future features:
+- 📊 Analytics dashboard for relationship insights
+- 🎨 Custom themes and color schemes
+- 📱 Mobile app version
+- 🔔 Push notifications
+- 📅 Calendar integration for special dates
 
 ---
 

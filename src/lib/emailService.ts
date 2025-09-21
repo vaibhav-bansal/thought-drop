@@ -26,24 +26,21 @@ console.log('EmailJS Environment:', {
   isConfigured: isEmailJSConfigured()
 });
 
-// Emoji and label mappings (using defaults for now, can be made configurable later)
-const emojis = config.advanced?.emotionEmojis || ['😢', '😔', '😕', '😠', '😐', '😊', '😄', '😍', '🥰', '😈'];
-const labels = config.advanced?.emotionLabels || ['Very Sad', 'Sad', 'Down', 'Angry', 'Neutral', 'Happy', 'Joyful', 'Loving', 'Adoring', 'Naughty'];
+// Emoji and label mappings (using config)
+const emojis = config.personalization.emotionEmojis;
+const labels = config.personalization.emotionLabels;
 
-// Event type mappings (using defaults for now, can be made configurable later)
-const eventMappings: Record<string, string> = {
-  'small-win': 'Small win 🌟',
-  'tough-moment': 'Tough moment 💭',
-  'need-hug': 'Need a hug 🤗',
-  'proud': 'Proud of myself ✨',
-  'other': 'Other'
-};
+// Event type mappings (using config)
+const eventMappings: Record<string, string> = {};
+config.personalization.eventOptions.forEach((option, index) => {
+  eventMappings[`event-${index}`] = option;
+});
 
 // Initialize EmailJS with public key
 if (isEmailJSConfigured()) {
   emailjs.init(config.emailjs.publicKey);
 } else {
-  console.warn('EmailJS not properly configured. Please check your environment variables.');
+  console.warn('EmailJS not properly configured. Please check your configuration in /config/app.json.');
 }
 
 /**
