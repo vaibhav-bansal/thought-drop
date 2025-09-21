@@ -6,10 +6,8 @@ export interface FormData {
   feeling: number;
   name: string;
   missYou: number;
-  horny: number;
-  angry: number;
   events: string[];
-  message: string;
+  message?: string;
   responseType: string;
 }
 
@@ -51,21 +49,14 @@ if (isEmailJSConfigured()) {
  */
 export const sendThoughtDrop = async (formData: FormData): Promise<void> => {
   try {
-    // Validate required fields
-    if (!formData.message.trim()) {
-      throw new Error('Message is required');
-    }
-
     // Prepare template parameters
     const templateParams = {
       feeling_emoji: emojis[formData.feeling],
       feeling_label: labels[formData.feeling],
       name: formData.name,
       miss_you_meter: formData.missYou,
-      horny_meter: formData.horny,
-      angry_meter: formData.angry,
       events: formData.events.map(eventId => eventMappings[eventId] || eventId).join(', '),
-      message: formData.message,
+      message: formData.message || 'No message provided',
       response_type: formData.responseType,
       timestamp: new Date().toLocaleString('en-IN', {
         weekday: 'long',

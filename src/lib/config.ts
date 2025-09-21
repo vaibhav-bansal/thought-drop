@@ -24,8 +24,6 @@ interface AppConfig {
     emotionLabels: string[];
     meters: {
       missYou: MeterConfig;
-      horny: MeterConfig;
-      angry: MeterConfig;
     };
     eventOptions: string[];
     responseOptions: string[];
@@ -54,11 +52,9 @@ const defaultConfig: AppConfig = {
     nameOptions: ['Princess', 'Baby', 'Good girl', 'Sweetheart', 'Love'],
     emotionEmojis: ['😢', '😔', '😕', '😠', '😐', '😊', '😄', '😍', '🥰', '😈'],
     emotionLabels: ['Very Sad', 'Sad', 'Down', 'Angry', 'Neutral', 'Happy', 'Joyful', 'Loving', 'Adoring', 'Naughty'],
-    meters: {
-      missYou: { label: 'Miss You Meter', min: 0, max: 10, default: 5 },
-      horny: { label: 'Horny Meter', min: 0, max: 10, default: 5 },
-      angry: { label: 'Angry Meter', min: 0, max: 10, default: 5 }
-    },
+      meters: {
+        missYou: { label: 'Miss You Meter', min: 0, max: 10, default: 5 }
+      },
     eventOptions: ['Small win 🌟', 'Tough moment 💭', 'Need a hug 🤗', 'Proud of myself ✨', 'Other'],
     responseOptions: ['Listen only', 'Advice welcome', 'Hype me up', 'Check on me later']
   },
@@ -104,15 +100,15 @@ function validateConfig(configData: unknown): AppConfig {
       mergedConfig.personalization.meters = defaultConfig.personalization.meters;
     } else {
       // Validate each meter
-      ['missYou', 'horny', 'angry'].forEach(meterKey => {
-        if (!mergedConfig.personalization.meters[meterKey]) {
+      ['missYou'].forEach(meterKey => {
+        if (!mergedConfig.personalization.meters[meterKey as keyof typeof mergedConfig.personalization.meters]) {
           console.warn(`Missing meter ${meterKey}, using default`);
-          mergedConfig.personalization.meters[meterKey] = defaultConfig.personalization.meters[meterKey];
+          mergedConfig.personalization.meters[meterKey as keyof typeof mergedConfig.personalization.meters] = defaultConfig.personalization.meters[meterKey as keyof typeof defaultConfig.personalization.meters];
         }
       });
     }
     
-    return mergedConfig as AppConfig;
+    return mergedConfig;
   } catch (error) {
     console.error('Config validation failed, using default configuration:', error);
     return defaultConfig;
@@ -120,14 +116,27 @@ function validateConfig(configData: unknown): AppConfig {
 }
 
 // Deep merge utility function
-function deepMerge(target: Record<string, unknown>, source: Record<string, unknown>): Record<string, unknown> {
+function deepMerge(target: AppConfig, source: Record<string, unknown>): AppConfig {
   const result = { ...target };
   
   for (const key in source) {
     if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])) {
-      result[key] = deepMerge((target[key] as Record<string, unknown>) || {}, source[key] as Record<string, unknown>);
+      if (key === 'app' && result.app) {
+        result.app = { ...result.app, ...(source[key] as Record<string, unknown>) } as AppConfig['app'];
+      } else if (key === 'personalization' && result.personalization) {
+        result.personalization = { ...result.personalization, ...(source[key] as Record<string, unknown>) } as AppConfig['personalization'];
+      } else if (key === 'emailjs' && result.emailjs) {
+        result.emailjs = { ...result.emailjs, ...(source[key] as Record<string, unknown>) } as AppConfig['emailjs'];
+      }
     } else {
-      result[key] = source[key];
+      // Handle primitive values
+      if (key === 'app' && typeof source[key] === 'object') {
+        result.app = { ...result.app, ...(source[key] as Record<string, unknown>) } as AppConfig['app'];
+      } else if (key === 'personalization' && typeof source[key] === 'object') {
+        result.personalization = { ...result.personalization, ...(source[key] as Record<string, unknown>) } as AppConfig['personalization'];
+      } else if (key === 'emailjs' && typeof source[key] === 'object') {
+        result.emailjs = { ...result.emailjs, ...(source[key] as Record<string, unknown>) } as AppConfig['emailjs'];
+      }
     }
   }
   

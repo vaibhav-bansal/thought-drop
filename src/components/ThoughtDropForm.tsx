@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -27,8 +27,6 @@ const ThoughtDropForm: React.FC<ThoughtDropFormProps> = ({ onSubmit }) => {
       feeling: 5,
       name: undefined,
       missYou: config.personalization.meters.missYou.default,
-      horny: config.personalization.meters.horny.default,
-      angry: config.personalization.meters.angry.default,
       events: [],
       message: undefined,
       responseType: undefined
@@ -36,6 +34,16 @@ const ThoughtDropForm: React.FC<ThoughtDropFormProps> = ({ onSubmit }) => {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Refs for form fields to enable scroll-to-error
+  const fieldRefs = {
+    feeling: useRef<HTMLDivElement>(null),
+    name: useRef<HTMLDivElement>(null),
+    missYou: useRef<HTMLDivElement>(null),
+    events: useRef<HTMLDivElement>(null),
+    message: useRef<HTMLDivElement>(null),
+    responseType: useRef<HTMLDivElement>(null)
+  };
 
   const nameOptions = config.personalization.nameOptions;
 
@@ -72,6 +80,42 @@ const ThoughtDropForm: React.FC<ThoughtDropFormProps> = ({ onSubmit }) => {
     }
   };
 
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Trigger validation
+    form.trigger().then((isValid) => {
+      if (!isValid) {
+        // Get form errors
+        const errors = form.formState.errors;
+        
+        // Find the first field with an error and scroll to it
+        const fieldOrder = ['feeling', 'name', 'missYou', 'events', 'message', 'responseType'];
+        
+        for (const fieldName of fieldOrder) {
+          if (errors[fieldName as keyof typeof errors]) {
+            const fieldRef = fieldRefs[fieldName as keyof typeof fieldRefs];
+            if (fieldRef?.current) {
+              fieldRef.current.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'center' 
+              });
+              // Focus the field for better UX
+              const input = fieldRef.current.querySelector('input, select, textarea, button') as HTMLElement;
+              if (input) {
+                input.focus();
+              }
+              break;
+            }
+          }
+        }
+      } else {
+        // If valid, proceed with form submission
+        form.handleSubmit(onSubmitForm)();
+      }
+    });
+  };
+
   return (
     <div className="min-h-screen p-4 pb-8 flex flex-col">
       {/* Header */}
@@ -89,9 +133,9 @@ const ThoughtDropForm: React.FC<ThoughtDropFormProps> = ({ onSubmit }) => {
 
       {/* Form */}
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmitForm)} className="flex-1 space-y-8 max-w-md mx-auto w-full mb-8">
+        <form onSubmit={handleFormSubmit} className="flex-1 space-y-8 max-w-md mx-auto w-full mb-8">
           {/* Question 1: How do you feel? */}
-          <Card className="p-6 bg-white/30 dark:bg-white/5 border-warm-text/10">
+          <Card ref={fieldRefs.feeling} className="p-6 bg-white/30 dark:bg-white/5 border-warm-text/10">
             <FormField
               control={form.control}
               name="feeling"
@@ -112,7 +156,7 @@ const ThoughtDropForm: React.FC<ThoughtDropFormProps> = ({ onSubmit }) => {
           </Card>
 
           {/* Question 2: Pick your name */}
-          <Card className="p-6 bg-white/30 dark:bg-white/5 border-warm-text/10">
+          <Card ref={fieldRefs.name} className="p-6 bg-white/30 dark:bg-white/5 border-warm-text/10">
             <FormField
               control={form.control}
               name="name"
@@ -138,8 +182,8 @@ const ThoughtDropForm: React.FC<ThoughtDropFormProps> = ({ onSubmit }) => {
             />
           </Card>
 
-          {/* Question 3-5: Meters */}
-          <Card className="p-6 bg-white/30 dark:bg-white/5 border-warm-text/10 space-y-6">
+          {/* Question 3: Miss You Meter */}
+          <Card ref={fieldRefs.missYou} className="p-6 bg-white/30 dark:bg-white/5 border-warm-text/10 space-y-6">
             <FormField
               control={form.control}
               name="missYou"
@@ -158,46 +202,10 @@ const ThoughtDropForm: React.FC<ThoughtDropFormProps> = ({ onSubmit }) => {
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="horny"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{config.personalization.meters.horny.label}</FormLabel>
-                  <FormControl>
-                    <RangeSlider
-                      label={config.personalization.meters.horny.label}
-                      value={field.value}
-                      onChange={field.onChange}
-                      min={config.personalization.meters.horny.min}
-                      max={config.personalization.meters.horny.max}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="angry"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{config.personalization.meters.angry.label}</FormLabel>
-                  <FormControl>
-                    <RangeSlider
-                      label={config.personalization.meters.angry.label}
-                      value={field.value}
-                      onChange={field.onChange}
-                      min={config.personalization.meters.angry.min}
-                      max={config.personalization.meters.angry.max}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
           </Card>
 
-          {/* Question 6: Events */}
-          <Card className="p-6 bg-white/30 dark:bg-white/5 border-warm-text/10">
+          {/* Question 4: Events */}
+          <Card ref={fieldRefs.events} className="p-6 bg-white/30 dark:bg-white/5 border-warm-text/10">
             <FormField
               control={form.control}
               name="events"
@@ -223,15 +231,14 @@ const ThoughtDropForm: React.FC<ThoughtDropFormProps> = ({ onSubmit }) => {
             />
           </Card>
 
-          {/* Question 7: Message */}
-          <Card className="p-6 bg-white/30 dark:bg-white/5 border-warm-text/10">
+          {/* Question 5: Message */}
+          <Card ref={fieldRefs.message} className="p-6 bg-white/30 dark:bg-white/5 border-warm-text/10">
             <FormField
               control={form.control}
               name="message"
-              rules={{ required: "Please enter a message" }}
               render={({ field }) => (
                 <FormItem>
-                  <RequiredFormLabel>Message</RequiredFormLabel>
+                  <FormLabel>Message (Optional)</FormLabel>
                   <FormControl>
                     <Textarea
                       {...field}
@@ -245,8 +252,8 @@ const ThoughtDropForm: React.FC<ThoughtDropFormProps> = ({ onSubmit }) => {
             />
           </Card>
 
-          {/* Question 8: Response Type */}
-          <Card className="p-6 bg-white/30 dark:bg-white/5 border-warm-text/10">
+          {/* Question 6: Response Type */}
+          <Card ref={fieldRefs.responseType} className="p-6 bg-white/30 dark:bg-white/5 border-warm-text/10">
             <FormField
               control={form.control}
               name="responseType"

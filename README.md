@@ -14,8 +14,8 @@ Thought Drop is a modern web application designed for couples who want to mainta
 ### ✨ Key Features
 
 - **🎭 Emotional State Tracking** - Express how you feel with intuitive emoji sliders
-- **💬 Personalized Messaging** - Share thoughts with customizable partner nicknames
-- **📊 Emotion Meters** - Track different aspects of your emotional state
+- **💬 Personalized Messaging** - Share thoughts with customizable partner nicknames (optional message)
+- **💕 Miss You Meter** - Express how much you miss your partner
 - **🏷️ Event Tagging** - Mark important moments and experiences
 - **📧 Email Notifications** - Receive thoughts directly in your inbox
 - **🌙 Dark Mode** - Beautiful interface that adapts to your preference
@@ -92,9 +92,7 @@ All customization is done through the `public/config/app.json` file. Here's what
     "emotionEmojis": ["😢", "😔", "😕", "😠", "😐", "😊", "😄", "😍", "🥰", "😈"],
     "emotionLabels": ["Very Sad", "Sad", "Down", "Angry", "Neutral", "Happy", "Joyful", "Loving", "Adoring", "Naughty"],
     "meters": {
-      "missYou": { "label": "Miss You Meter", "min": 0, "max": 10, "default": 5 },
-      "horny": { "label": "Horny Meter", "min": 0, "max": 10, "default": 5 },
-      "angry": { "label": "Angry Meter", "min": 0, "max": 10, "default": 5 }
+      "missYou": { "label": "Miss You Meter", "min": 0, "max": 10, "default": 5 }
     },
     "eventOptions": ["Small win 🌟", "Tough moment 💭", "Need a hug 🤗", "Proud of myself ✨", "Other"],
     "responseOptions": ["Listen only", "Advice welcome", "Hype me up", "Check on me later"]
@@ -172,16 +170,16 @@ No environment variables needed! 🎉
 
 ### v2.0 - JSON Configuration System
 - ✅ **Migrated from environment variables to JSON config files**
-- ✅ **Added configurable emotion meters** (Miss You, Horny, Angry)
+- ✅ **Added configurable Miss You meter** (unique emotional aspect for couples)
 - ✅ **Improved configuration validation** with fallbacks
 - ✅ **Updated all dependencies** to latest versions
 - ✅ **Enhanced code quality** with better TypeScript types
 - ✅ **Simplified deployment** - no more `.env` files needed
-- ✅ **Better error handling** and user feedback
+- ✅ **Added scroll-to-error functionality** - Automatically scrolls to first validation error
 
 ### Key Improvements
 - **🎯 Easier Setup**: Copy one JSON file instead of managing environment variables
-- **🔧 Better Customization**: Configure meters, emotions, and all options in one place
+- **🔧 Better Customization**: Configure emotions, Miss You meter, and all options in one place
 - **📦 Cleaner Codebase**: Removed unused code and improved type safety
 - **🚀 Faster Development**: Hot reloading for configuration changes
 - **🛡️ More Robust**: Automatic validation and fallback configurations

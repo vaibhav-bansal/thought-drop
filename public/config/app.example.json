@@ -45,18 +45,6 @@
         "min": 0,
         "max": 10,
         "default": 5
-      },
-      "horny": {
-        "label": "Horny Meter",
-        "min": 0,
-        "max": 10,
-        "default": 5
-      },
-      "angry": {
-        "label": "Angry Meter",
-        "min": 0,
-        "max": 10,
-        "default": 5
       }
     },
     "eventOptions": [
