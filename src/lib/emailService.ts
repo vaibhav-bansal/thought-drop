@@ -74,7 +74,23 @@ export const sendThoughtDrop = async (formData: FormData): Promise<void> => {
     // Log the data being sent (for debugging)
     console.log(`Sending email in ${isTestEnv ? 'TEST' : 'PRODUCTION'} mode:`, templateParams);
 
-    // Send the email
+    // Handle test mode - simulate successful email sending
+    if (isTestEnv) {
+      console.log('🧪 TEST MODE: Simulating successful email send');
+      console.log('📧 Email would contain:', templateParams);
+      
+      // Simulate a delay like a real email service
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      console.log('✅ TEST: Email "sent" successfully!');
+      return;
+    }
+
+    // Production mode - actually send the email
+    if (!isEmailJSConfigured()) {
+      throw new Error('EmailJS not properly configured. Please check your configuration in /config/app.json.');
+    }
+
     const response = await emailjs.send(
       config.emailjs.serviceId,
       getEmailJSTemplateId(),
