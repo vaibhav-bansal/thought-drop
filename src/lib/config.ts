@@ -45,11 +45,11 @@ const defaultConfig: AppConfig = {
     name: 'thought-drop',
     title: 'Thought Drop',
     displayName: 'Thought Drop',
-    subtitle: 'A safe space for your heart',
+    subtitle: 'Made by Shiva, for Parvati',
     description: 'A safe space for your thoughts'
   },
   personalization: {
-    nameOptions: ['Princess', 'Baby', 'Good girl', 'Sweetheart', 'Love'],
+    nameOptions: ['Pari', 'Chhota Bachcha', 'Chhota bachcha', 'Baby girl', 'Princess', 'Parvati', 'Goddess', 'Strong independent woman', 'Daddy\'s girl', 'Little demon', 'Man-hater'],
     emotionEmojis: ['😢', '😔', '😕', '😠', '😐', '😊', '😄', '😍', '🥰', '😈'],
     emotionLabels: ['Very Sad', 'Sad', 'Down', 'Angry', 'Neutral', 'Happy', 'Joyful', 'Loving', 'Adoring', 'Naughty'],
       meters: {
@@ -162,13 +162,16 @@ async function loadConfig(): Promise<AppConfig> {
       configLoaded = true;
       console.log('Configuration loaded and validated from /config/app.json');
       return config;
+    } else {
+      throw new Error(`Failed to load /config/app.json: ${response.status} ${response.statusText}`);
     }
   } catch (error) {
-    console.warn('Failed to load config/app.json, using default configuration:', error);
+    console.error('❌ CRITICAL: Configuration file missing or invalid:', error);
+    throw new Error(
+      'Configuration file not found. Please ensure /config/app.json exists. ' +
+      'Copy app.example.json to app.json and customize it with your settings.'
+    );
   }
-  
-  configLoaded = true;
-  return config;
 }
 
 // Initialize config loading

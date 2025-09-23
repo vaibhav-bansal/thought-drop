@@ -70,10 +70,25 @@ const ThoughtDropForm: React.FC<ThoughtDropFormProps> = ({ onSubmit }) => {
       onSubmit(data);
     } catch (error) {
       console.error('Failed to send thought drop:', error);
+      
+      // Check if it's a configuration error
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      
+      let title = "Failed to send thought drop";
+      let description = "Please try again later. If the problem persists, check your internet connection.";
+      
+      if (errorMessage.includes('Configuration file not found') || errorMessage.includes('app.json')) {
+        title = "Configuration Error";
+        description = "Configuration file is missing. Please ensure /config/app.json exists and is properly configured.";
+      } else if (errorMessage.includes('EmailJS not properly configured')) {
+        title = "Email Service Not Configured";
+        description = "Please check your EmailJS configuration in /config/app.json.";
+      }
+      
       toast({
         variant: "destructive",
-        title: "Failed to send thought drop",
-        description: "Please try again later. If the problem persists, check your internet connection.",
+        title,
+        description,
       });
     } finally {
       setIsSubmitting(false);
