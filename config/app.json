@@ -1,6 +1,6 @@
 {
   "app": {
-    "author": "Your Name",
+    "author": "Vaibhav Bansal",
     "name": "thought-drop",
     "title": "Thought Drop",
     "displayName": "Thought Drop",
@@ -74,10 +74,10 @@
     ]
   },
   "emailjs": {
-    "publicKey": "",
-    "serviceId": "",
-    "templateId": "",
-    "testTemplateId": "",
-    "appEnv": "production"
+    "publicKey": "publicKey",
+    "serviceId": "serviceId",
+    "templateId": "templateId",
+    "testTemplateId": "testTemplateId",
+    "appEnv": "test"
   }
 }

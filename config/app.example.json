@@ -74,10 +74,10 @@
     ]
   },
   "emailjs": {
-    "publicKey": "",
-    "serviceId": "",
-    "templateId": "",
-    "testTemplateId": "",
-    "appEnv": "production"
+    "publicKey": "publicKey",
+    "serviceId": "serviceId",
+    "templateId": "templateId",
+    "testTemplateId": "testTemplateId",
+    "appEnv": "test"
   }
 }
