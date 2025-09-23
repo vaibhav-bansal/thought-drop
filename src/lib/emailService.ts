@@ -34,12 +34,25 @@ config.personalization.eventOptions.forEach((option, index) => {
   eventMappings[`event-${index}`] = option;
 });
 
-// Initialize EmailJS with public key
-if (isEmailJSConfigured()) {
-  emailjs.init(config.emailjs.publicKey);
-} else {
-  console.warn('EmailJS not properly configured. Please check your configuration in /config/app.json.');
-}
+// Initialize EmailJS with public key after config is loaded
+const initializeEmailJS = async () => {
+  try {
+    const { loadConfig } = await import('./config');
+    await loadConfig(); // Wait for config to load
+    
+    if (isEmailJSConfigured()) {
+      emailjs.init(config.emailjs.publicKey);
+      console.log('EmailJS initialized successfully');
+    } else {
+      console.warn('EmailJS not properly configured. Please check your configuration in /config/app.json.');
+    }
+  } catch (error) {
+    console.error('Failed to initialize EmailJS due to configuration error:', error);
+    // The error will be handled by the UI when users try to submit the form
+  }
+};
+
+initializeEmailJS();
 
 /**
  * Sends a thought drop email using EmailJS
@@ -49,15 +62,20 @@ if (isEmailJSConfigured()) {
  */
 export const sendThoughtDrop = async (formData: FormData): Promise<void> => {
   try {
+    // Ensure config is loaded before proceeding
+    const { loadConfig } = await import('./config');
+    await loadConfig();
     // Prepare template parameters
     const templateParams = {
       feeling_emoji: emojis[formData.feeling],
       feeling_label: labels[formData.feeling],
       name: formData.name,
       miss_you_meter: formData.missYou,
-      events: formData.events.map(eventId => eventMappings[eventId] || eventId).join(', '),
+      events: formData.events.length > 0 
+        ? formData.events.map(eventId => eventMappings[eventId] || eventId).join(', ')
+        : 'No specific events mentioned',
       message: formData.message || 'No message provided',
-      response_type: formData.responseType,
+      response_type: formData.responseType || 'No specific response requested',
       timestamp: new Date().toLocaleString('en-IN', {
         weekday: 'long',
         year: 'numeric',
