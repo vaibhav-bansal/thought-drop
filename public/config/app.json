@@ -1,19 +1,23 @@
 {
   "app": {
     "author": "Vaibhav Bansal",
-    "name": "thought-drop",
-    "title": "Thought Drop",
+    "name": "Thought Drop",
     "displayName": "Thought Drop",
-    "subtitle": "A safe space for your heart",
+    "subtitle": "Made by Shiva, for Parvati",
     "description": "A safe space for your thoughts"
   },
   "personalization": {
     "nameOptions": [
-      "Princess",
-      "Honey",
+      "Pari",
+      "Chhota bachcha",
       "Baby girl",
-      "Sweetheart",
-      "Love"
+      "Princess",
+      "Parvati",
+      "Goddess",
+      "Strong independent woman",
+      "Daddy's girl",
+      "Little demon",
+      "Man-hater"
     ],
     "emotionEmojis": [
       "😢",
@@ -62,10 +66,10 @@
     ]
   },
   "emailjs": {
-    "publicKey": "testPublicKey",
-    "serviceId": "testServiceId",
-    "templateId": "testTemplateId",
-    "testTemplateId": "testTemplateId",
-    "appEnv": "test"
+    "publicKey": "o2QvlcBpsQv_8RbwV",
+    "serviceId": "personal_gmail",
+    "templateId": "thought-drop_new",
+    "testTemplateId": "thought-drop_new",
+    "appEnv": "production"
   }
 }
