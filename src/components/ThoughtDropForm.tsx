@@ -14,7 +14,7 @@ import { Heart } from 'lucide-react';
 import { sendThoughtDrop, FormData } from '@/lib/emailService';
 import { useToast } from "@/hooks/use-toast";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { config } from '@/lib/config';
+import { useConfig } from '@/hooks/useConfig';
 
 interface ThoughtDropFormProps {
   onSubmit: (data: FormData) => void;
@@ -22,17 +22,7 @@ interface ThoughtDropFormProps {
 
 const ThoughtDropForm: React.FC<ThoughtDropFormProps> = ({ onSubmit }) => {
   const { toast } = useToast();
-  const form = useForm<FormData>({
-    defaultValues: {
-      feeling: 5,
-      name: undefined,
-      missYou: config.personalization.meters.missYou.default,
-      events: [],
-      message: undefined,
-      responseType: undefined
-    }
-  });
-
+  const { config, loading, error } = useConfig();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Refs for form fields to enable scroll-to-error
@@ -45,13 +35,63 @@ const ThoughtDropForm: React.FC<ThoughtDropFormProps> = ({ onSubmit }) => {
     responseType: useRef<HTMLDivElement>(null)
   };
 
-  const nameOptions = config.personalization.nameOptions;
+  const form = useForm<FormData>({
+    defaultValues: {
+      feeling: 5,
+      name: undefined,
+      missYou: config?.personalization?.meters?.missYou?.default || 5,
+      events: [],
+      message: undefined,
+      responseType: undefined
+    }
+  });
 
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen p-4 pb-8 flex flex-col items-center justify-center">
+        <div className="flex items-center space-x-3">
+          <div className="w-12 h-12 bg-white/50 rounded-full flex items-center justify-center">
+            <Heart className="w-6 h-6 text-soft-pink animate-pulse" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-semibold text-warm-text dark:text-warm-text">Loading...</h1>
+            <p className="text-sm text-warm-text/60 dark:text-warm-text/60">Initializing configuration</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error || !config) {
+    return (
+      <div className="min-h-screen p-4 pb-8 flex flex-col items-center justify-center">
+        <div className="max-w-md mx-auto text-center">
+          <div className="w-12 h-12 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Heart className="w-6 h-6 text-red-500" />
+          </div>
+          <h1 className="text-2xl font-semibold text-warm-text dark:text-warm-text mb-2">Configuration Error</h1>
+          <p className="text-sm text-warm-text/60 dark:text-warm-text/60 mb-4">
+            {error || 'Configuration not found. Please ensure /config/app.json exists and is properly configured.'}
+          </p>
+          <Button 
+            onClick={() => window.location.reload()} 
+            className="bg-soft-pink hover:bg-soft-pink/90 text-warm-text"
+          >
+            Retry
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  // Prepare config-based data
+  const nameOptions = config.personalization.nameOptions;
   const eventOptions = config.personalization.eventOptions.map((option, index) => ({
     id: `event-${index}`,
     label: option
   }));
-
   const responseOptions = config.personalization.responseOptions;
 
   const handleEventChange = (eventId: string, checked: boolean) => {
@@ -140,8 +180,8 @@ const ThoughtDropForm: React.FC<ThoughtDropFormProps> = ({ onSubmit }) => {
             <Heart className="w-6 h-6 text-soft-pink" />
           </div>
           <div>
-            <h1 className="text-2xl font-semibold text-warm-text dark:text-warm-text">Thought Drop</h1>
-            <p className="text-sm text-warm-text/60 dark:text-warm-text/60">A safe space for your heart</p>
+            <h1 className="text-2xl font-semibold text-warm-text dark:text-warm-text">{config.app.name}</h1>
+            <p className="text-sm text-warm-text/60 dark:text-warm-text/60">{config.app.subtitle}</p>
           </div>
         </div>
       </div>

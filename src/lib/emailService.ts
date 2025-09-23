@@ -1,5 +1,5 @@
 import emailjs from '@emailjs/browser';
-import { config, getEmailJSTemplateId, isEmailJSConfigured } from './config';
+import { config, loadConfig, getEmailJSTemplateId, isEmailJSConfigured } from './config';
 
 // Re-export the FormData interface to maintain consistency
 export interface FormData {
@@ -11,38 +11,53 @@ export interface FormData {
   responseType: string;
 }
 
-// Environment configuration
-const isTestEnv = config.emailjs.appEnv === 'test';
+// Helper function to get config safely
+const getConfig = () => {
+  if (!config) {
+    throw new Error('Configuration not loaded. Please ensure config is properly initialized.');
+  }
+  return config;
+};
 
-// Log environment configuration on initialization
-console.log('EmailJS Environment:', {
-  environment: isTestEnv ? 'TEST' : 'PRODUCTION',
-  serviceId: config.emailjs.serviceId,
-  templateId: getEmailJSTemplateId(),
-  hasTestTemplate: !!config.emailjs.testTemplateId,
-  appEnv: config.emailjs.appEnv,
-  isConfigured: isEmailJSConfigured()
-});
+// Helper function to get emoji and label mappings
+const getEmojiAndLabelMappings = () => {
+  const currentConfig = getConfig();
+  return {
+    emojis: currentConfig.personalization.emotionEmojis,
+    labels: currentConfig.personalization.emotionLabels
+  };
+};
 
-// Emoji and label mappings (using config)
-const emojis = config.personalization.emotionEmojis;
-const labels = config.personalization.emotionLabels;
-
-// Event type mappings (using config)
-const eventMappings: Record<string, string> = {};
-config.personalization.eventOptions.forEach((option, index) => {
-  eventMappings[`event-${index}`] = option;
-});
+// Helper function to get event mappings
+const getEventMappings = () => {
+  const currentConfig = getConfig();
+  const eventMappings: Record<string, string> = {};
+  currentConfig.personalization.eventOptions.forEach((option, index) => {
+    eventMappings[`event-${index}`] = option;
+  });
+  return eventMappings;
+};
 
 // Initialize EmailJS with public key after config is loaded
 const initializeEmailJS = async () => {
   try {
-    const { loadConfig } = await import('./config');
     await loadConfig(); // Wait for config to load
     
     if (isEmailJSConfigured()) {
-      emailjs.init(config.emailjs.publicKey);
+      const currentConfig = getConfig();
+      emailjs.init(currentConfig.emailjs.publicKey);
       console.log('EmailJS initialized successfully');
+      
+      // Log environment configuration after initialization
+      const isTestEnv = currentConfig.emailjs.appEnv === 'test';
+      console.log('EmailJS Environment:', {
+        environment: isTestEnv ? 'TEST' : 'PRODUCTION',
+        serviceId: currentConfig.emailjs.serviceId,
+        templateId: getEmailJSTemplateId(),
+        hasTestTemplate: !!currentConfig.emailjs.testTemplateId,
+        appEnv: currentConfig.emailjs.appEnv,
+        isConfigured: isEmailJSConfigured()
+      });
     } else {
       console.warn('EmailJS not properly configured. Please check your configuration in /config/app.json.');
     }
@@ -63,8 +78,14 @@ initializeEmailJS();
 export const sendThoughtDrop = async (formData: FormData): Promise<void> => {
   try {
     // Ensure config is loaded before proceeding
-    const { loadConfig } = await import('./config');
     await loadConfig();
+    
+    // Get current config and mappings
+    const currentConfig = getConfig();
+    const { emojis, labels } = getEmojiAndLabelMappings();
+    const eventMappings = getEventMappings();
+    const isTestEnv = currentConfig.emailjs.appEnv === 'test';
+    
     // Prepare template parameters
     const templateParams = {
       feeling_emoji: emojis[formData.feeling],
@@ -110,7 +131,7 @@ export const sendThoughtDrop = async (formData: FormData): Promise<void> => {
     }
 
     const response = await emailjs.send(
-      config.emailjs.serviceId,
+      currentConfig.emailjs.serviceId,
       getEmailJSTemplateId(),
       templateParams
     );
