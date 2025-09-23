@@ -1,8 +1,7 @@
 {
   "app": {
-    "author": "Your Name",
-    "name": "thought-drop",
-    "title": "Thought Drop",
+    "author": "Vaibhav Bansal",
+    "name": "Thought Drop",
     "displayName": "Thought Drop",
     "subtitle": "Made by Shiva, for Parvati",
     "description": "A safe space for your thoughts"
@@ -10,7 +9,6 @@
   "personalization": {
     "nameOptions": [
       "Pari",
-      "Chhota Bachcha",
       "Chhota bachcha",
       "Baby girl",
       "Princess",

@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Slider } from '@/components/ui/slider';
-import { config } from '@/lib/config';
+import { useConfig } from '@/hooks/useConfig';
 
 interface EmojiSliderProps {
   value: number;
@@ -9,6 +9,32 @@ interface EmojiSliderProps {
 }
 
 const EmojiSlider: React.FC<EmojiSliderProps> = ({ value, onChange }) => {
+  const { config, loading, error } = useConfig();
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="space-y-4">
+        <div className="text-center">
+          <div className="text-4xl mb-2">⏳</div>
+          <div className="text-sm text-warm-text/70 dark:text-warm-text/70">Loading...</div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error || !config) {
+    return (
+      <div className="space-y-4">
+        <div className="text-center">
+          <div className="text-4xl mb-2">❌</div>
+          <div className="text-sm text-red-500">Config Error</div>
+        </div>
+      </div>
+    );
+  }
+
   const emojis = config.personalization.emotionEmojis;
   const labels = config.personalization.emotionLabels;
 
