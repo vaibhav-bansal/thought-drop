@@ -25,4 +25,4 @@ dist-ssr
 *.sw?
 
 # Personal configuration (keep private)
-public/config/app.json
+# public/config/app.json - Commented out for deployment
